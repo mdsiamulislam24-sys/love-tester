@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Love Tester - Admin Panel</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #ffe6f0;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d63384;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #d63384;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #fff0f6;
+        }
+
+        .logout {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background: #d63384;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout:hover {
+            background: #b02a6b;
+        }
+
+        .empty {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>❤️ Love Tester Admin Panel</h1>
+
+        <table id="resultsTable">
+
+            <thead>
+                <tr>
+                    <th>Name 1</th>
+                    <th>Name 2</th>
+                    <th>Love Score</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody id="resultsBody">
+            </tbody>
+
+        </table>
+
+        <p class="empty" id="emptyMessage"></p>
+
+        <button class="logout" onclick="logout()">
+            Logout
+        </button>
+
+    </div>
+
+
+    <script>
+
+        // Check admin login
+        if (sessionStorage.getItem("adminLoggedIn") !== "true") {
+
+            window.location.href = "login.html";
+
+        }
+
+
+        // Load results
+        async function loadResults() {
+
+            try {
+
+                const response = await fetch("/admin-results");
+
+                const results = await response.json();
+
+                const tbody = document.getElementById("resultsBody");
+
+                const emptyMessage = document.getElementById("emptyMessage");
+
+                tbody.innerHTML = "";
+
+
+                if (results.length === 0) {
+
+                    emptyMessage.textContent = "No results yet.";
+
+                    return;
+
+                }
+
+
+                emptyMessage.textContent = "";
+
+
+                results.forEach(result => {
+
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td>${result.name1}</td>
+                        <td>${result.name2}</td>
+                        <td>${result.score}%</td>
+                        <td>${result.created_at}</td>
+                    `;
+
+                    tbody.appendChild(row);
+
+                });
+
+            } catch (error) {
+
+                console.log("Error:", error);
+
+            }
+
+        }
+
+
+        // Logout
+        function logout() {
+
+            sessionStorage.removeItem("adminLoggedIn");
+
+            window.location.href = "login.html";
+
+        }
+
+
+        loadResults();
+
+    </script>
+
+</body>
+
+</html>
